@@ -26,7 +26,22 @@ public class NpgSql : MonoBehaviour
         //Simple(connStringBuilder.ConnectionString);
         conn = new NpgsqlConnection(connStringBuilder.ConnectionString);
         conn.Open();
-        ReloadData(dbCon);
+
+    }
+
+
+    private float nextActionTime = 0.0f;
+    public float period = 1.0f;
+
+    void Update()
+    {
+        if (Time.time > nextActionTime)
+        {
+            nextActionTime += period;
+            // execute block of code here
+            // Update every second 
+            ReloadData(dbCon);
+        }
     }
 
     public void Simple(string connString)
@@ -62,8 +77,7 @@ public class NpgSql : MonoBehaviour
             {
                 while (reader.Read())
                 {
-                    Debug.Log($"\taccount {reader.GetValue(0)}: {reader.GetValue(1)}\n");
-                    allAccounts += $"account {reader.GetValue(0)}: {reader.GetValue(1)}\n";
+                    allAccounts += $"{reader.GetValue(0)}: {reader.GetValue(1)}\n";
                 }
             }
         }
