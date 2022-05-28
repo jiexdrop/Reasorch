@@ -14,8 +14,8 @@ public class NpgSql : MonoBehaviour
         connStringBuilder.Host = "free-tier13.aws-eu-central-1.cockroachlabs.cloud";
         connStringBuilder.Port = 26257;
         connStringBuilder.SslMode = SslMode.Require;
-        connStringBuilder.Username = "jorge";
-        connStringBuilder.Password = "ur6sWgO7G4hpcusvtqHmSg";
+        connStringBuilder.Username = "anon";
+        connStringBuilder.Password = "t9tmPEKdqTjLpsBCSL8qeg";
         connStringBuilder.Database = "thorn-python-1626.defaultdb";
         connStringBuilder.RootCertificate = "~/.postgres/root.crt";
         connStringBuilder.TrustServerCertificate = true;
