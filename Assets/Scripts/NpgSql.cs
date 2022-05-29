@@ -29,6 +29,10 @@ public class NpgSql : MonoBehaviour
 
     }
 
+    public void OnDestroy()
+    {
+        conn.Close();
+    }
 
     private float nextActionTime = 0.0f;
     public float period = 1.0f;
@@ -44,23 +48,20 @@ public class NpgSql : MonoBehaviour
         }
     }
 
-    public void Simple(string connString)
+    public void CreateAccount(TextMeshProUGUI name)
     {
 
-        // Create the "accounts" table.
-        new NpgsqlCommand("CREATE TABLE IF NOT EXISTS accounts (id INT PRIMARY KEY, name STRING, score INT)", conn).ExecuteNonQuery();
+        // Create the "players" table.
+        //new NpgsqlCommand("CREATE TABLE IF NOT EXISTS players (id INT PRIMARY KEY, name STRING, score INT)", conn).ExecuteNonQuery();
 
         // Insert two rows into the "accounts" table.
         using (var cmd = new NpgsqlCommand())
         {
             cmd.Connection = conn;
-            cmd.CommandText = "UPSERT INTO accounts(id, name, score) VALUES(@id1, @name1, @val1), (@id2, @name2, @val2)";
-            cmd.Parameters.AddWithValue("id1", 1);
-            cmd.Parameters.AddWithValue("name1", "CAT");
-            cmd.Parameters.AddWithValue("val1", 0);
-            cmd.Parameters.AddWithValue("id2", 2);
-            cmd.Parameters.AddWithValue("name2", "DOGE");
-            cmd.Parameters.AddWithValue("val2", 0);
+            cmd.CommandText = "UPSERT INTO players(name, health, money) VALUES(@name, @health, @money)";
+            cmd.Parameters.AddWithValue("name", name.text);
+            cmd.Parameters.AddWithValue("health", 100);
+            cmd.Parameters.AddWithValue("money", 0);
             cmd.ExecuteNonQuery();
         }
 
@@ -71,13 +72,13 @@ public class NpgSql : MonoBehaviour
         // Print out the balances.
         System.Console.WriteLine("Initial balances:");
         string allAccounts = "";
-        using (var cmd = new NpgsqlCommand("SELECT name, score FROM accounts", conn))
+        using (var cmd = new NpgsqlCommand("SELECT name, health, money FROM players", conn))
         {
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    allAccounts += $"{reader.GetValue(0)}: {reader.GetValue(1)}\n";
+                    allAccounts += $"{reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)}\n";
                 }
             }
         }
@@ -85,7 +86,7 @@ public class NpgSql : MonoBehaviour
     }
 
 
-    public void Increment(int id)
+    public void Move(int id, int x, int y)
     {
 
 
@@ -93,9 +94,9 @@ public class NpgSql : MonoBehaviour
         using (var cmd = new NpgsqlCommand())
         {
             cmd.Connection = conn;
-            cmd.CommandText = "UPDATE accounts SET score = @score WHERE id = @id";
-            cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("score", GetScore(id) + 1);
+            cmd.CommandText = $"UPDATE positions SET x = @score WHERE player_id = {id}";
+            cmd.Parameters.AddWithValue("x", x);
+            cmd.Parameters.AddWithValue("y", y);
             cmd.ExecuteNonQuery();
         }
 
@@ -103,19 +104,19 @@ public class NpgSql : MonoBehaviour
 
     }
 
-    public int GetScore(int id)
+    public Vector2 GetPosition(int id)
     {
-        using (var cmd = new NpgsqlCommand($"SELECT * FROM accounts WHERE id = {id} LIMIT 1", conn))
+        using (var cmd = new NpgsqlCommand($"SELECT * FROM positions WHERE id = {id} LIMIT 1", conn))
         using (var reader = cmd.ExecuteReader())
         {
             while (reader.Read())
             {
                 Debug.Log($"\taccount {reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)}\n");
-                return reader.GetInt32(2);
+                return new Vector2( reader.GetInt32(2),  reader.GetInt32(3));
             }
         }
 
-        return 0;
+        return Vector2.zero;
     }
 
 }
