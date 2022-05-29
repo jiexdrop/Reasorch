@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Npgsql;
+using UnityEngine.SceneManagement;
 
 public class NpgSql : MonoBehaviour
 {
-    public TextMeshProUGUI dbCon;
+    public TextMeshProUGUI playersTextList;
 
     private NpgsqlConnectionStringBuilder connStringBuilder;
 
@@ -44,7 +45,7 @@ public class NpgSql : MonoBehaviour
             nextActionTime += period;
             // execute block of code here
             // Update every second 
-            ReloadData(dbCon);
+            ReloadData(playersTextList);
         }
     }
 
@@ -70,11 +71,16 @@ public class NpgSql : MonoBehaviour
     public void Play(TextMeshProUGUI name)
     {
         long player_id = GetPlayerId(name.text);
+
+        if(player_id == -1){
+            return;
+        }
+
         Debug.Log($"Got player id {player_id} for player {name.text}");
 
         PlayerPrefs.SetString("player_id", player_id.ToString());
 
-        //Debug.Log($"Got player id {PlayerPrefs.GetString("player_id")}");
+        SceneManager.LoadScene("Game");
     }
 
     public long GetPlayerId(string name)
@@ -128,7 +134,7 @@ public class NpgSql : MonoBehaviour
             cmd.ExecuteNonQuery();
         }
 
-        ReloadData(dbCon);
+        ReloadData(playersTextList);
 
     }
 

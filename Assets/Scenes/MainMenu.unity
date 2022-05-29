@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 359220001}
   - component: {fileID: 359220000}
   m_Layer: 5
-  m_Name: DbCon
+  m_Name: PlayersTextList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1617,7 +1617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5e3eb7bacfb1e74ebba9f1402e3a6ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dbCon: {fileID: 359220000}
+  playersTextList: {fileID: 359220000}
   period: 1
 --- !u!1 &1752424048
 GameObject:

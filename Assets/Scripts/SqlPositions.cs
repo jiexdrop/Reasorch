@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class SqlPositions : MonoBehaviour
 {
-    public int playerId;
+    public string playerId;
 
     public NpgSql npgSql;
 
     void Start()
     {
-        
+        playerId = PlayerPrefs.GetString("player_id");
     }
 
     // Update is called once per frame
