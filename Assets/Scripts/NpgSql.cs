@@ -67,6 +67,34 @@ public class NpgSql : MonoBehaviour
 
     }
 
+    public void Play(TextMeshProUGUI name)
+    {
+        long player_id = GetPlayerId(name.text);
+        Debug.Log($"Got player id {player_id} for player {name.text}");
+
+        PlayerPrefs.SetString("player_id", player_id.ToString());
+
+        //Debug.Log($"Got player id {PlayerPrefs.GetString("player_id")}");
+    }
+
+    public long GetPlayerId(string name)
+    {
+        using (var cmd = new NpgsqlCommand($"SELECT * FROM players WHERE name = @name LIMIT 1", conn))
+        {
+            cmd.Parameters.AddWithValue("name", name);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Debug.Log($"\taccount {reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)}\n");
+                    return reader.GetInt64(0);
+                }
+            }
+        }
+
+        return -1;
+    }
+
     public void ReloadData(TextMeshProUGUI text)
     {
         // Print out the balances.
@@ -112,7 +140,7 @@ public class NpgSql : MonoBehaviour
             while (reader.Read())
             {
                 Debug.Log($"\taccount {reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)}\n");
-                return new Vector2( reader.GetInt32(2),  reader.GetInt32(3));
+                return new Vector2(reader.GetInt32(2), reader.GetInt32(3));
             }
         }
 
