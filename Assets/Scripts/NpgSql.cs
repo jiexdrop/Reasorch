@@ -68,17 +68,55 @@ public class NpgSql : MonoBehaviour
 
     }
 
+    public void CreatePosition(long playerId){
+        if(PlayerHasPosition(playerId)) {
+            // Do not create starting position if player already exists
+            return;
+        }
+
+        // Create a starting position
+        using (var cmd = new NpgsqlCommand())
+        {
+            cmd.Connection = conn;
+            cmd.CommandText = "UPSERT INTO positions(player_id, x, y) VALUES(@player_id, @x, @y)";
+            cmd.Parameters.AddWithValue("player_id", playerId);
+            cmd.Parameters.AddWithValue("x", 0);
+            cmd.Parameters.AddWithValue("y", 0);
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public bool PlayerHasPosition(long playerId)
+    {
+        using (var cmd = new NpgsqlCommand($"SELECT * FROM positions WHERE player_id = @player_id LIMIT 1", conn))
+        {
+            cmd.Parameters.AddWithValue("player_id", playerId);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void Play(TextMeshProUGUI name)
     {
         long player_id = GetPlayerId(name.text);
 
         if(player_id == -1){
+            Debug.Log($"Got no player with name = {name.text}");
             return;
         }
 
         Debug.Log($"Got player id {player_id} for player {name.text}");
 
         PlayerPrefs.SetString("player_id", player_id.ToString());
+
+        CreatePosition(player_id);
 
         SceneManager.LoadScene("Game");
     }
