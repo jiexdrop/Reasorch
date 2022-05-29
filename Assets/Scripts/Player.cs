@@ -4,19 +4,33 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // Start is called before the first frame update
+
+    public SpriteRenderer spriteRenderer;
+
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public void SetPosition(int x, int y){
+    public void SetPosition(int x, int y)
+    {
         transform.position = new Vector3(x, y);
+    }
+
+    public void SetColor(string color)
+    {
+
+        Color newCol;
+
+        if (ColorUtility.TryParseHtmlString(color, out newCol))
+        {
+            spriteRenderer.color = newCol;
+        }
     }
 }

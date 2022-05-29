@@ -17,40 +17,50 @@ public class SqlPositions : MonoBehaviour
     {
         playerId = PlayerPrefs.GetString("player_id");
 
-        InstantiateAllPlayers();
+        UpdatePlayers();
     }
 
-    public void InstantiateAllPlayers()
+    public void UpdatePlayers()
     {
+        // Also instantiates
+        UpdatePlayerPositions();
+
         // Print out the players.
         System.Console.WriteLine("Players:");
 
-        using (var cmd = new NpgsqlCommand("SELECT name, health, money FROM players", npgSql.conn))
-        {
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    Debug.Log($"{reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)}");
-                }
-            }
-        }
-
-        UpdatePlayerPositions();
-    }
-
-    void UpdatePlayerPositions()
-    {
-        System.Console.WriteLine("Positions:");
-
-        using (var cmd = new NpgsqlCommand("SELECT id, x, y FROM positions", npgSql.conn))
+        using (var cmd = new NpgsqlCommand("SELECT id, name, health, money, color FROM players", npgSql.conn))
         {
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
                     string updatePlayerId = reader.GetValue(0).ToString();
-                    Debug.Log($"{reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)}");
+                    //Debug.Log($"{reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)} : {reader.GetValue(3)}");
+
+                    if (players.ContainsKey(updatePlayerId))
+                    {
+                        players[updatePlayerId].SetColor(reader.GetValue(4).ToString());
+                    }
+
+                }
+            }
+        }
+
+
+    }
+
+    void UpdatePlayerPositions()
+    {
+        System.Console.WriteLine("Positions:");
+
+        using (var cmd = new NpgsqlCommand("SELECT player_id, x, y FROM positions", npgSql.conn))
+        {
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string updatePlayerId = reader.GetValue(0).ToString();
+                    //Debug.Log($"{reader.GetValue(0)}: {reader.GetValue(1)} : {reader.GetValue(2)}");
                     if (players.ContainsKey(updatePlayerId))
                     {
                         players[updatePlayerId].SetPosition(reader.GetInt32(1), reader.GetInt32(2));
@@ -77,7 +87,7 @@ public class SqlPositions : MonoBehaviour
             nextActionTime += period;
             // execute block of code here
             // Update every second 
-            UpdatePlayerPositions();
+            UpdatePlayers();
         }
     }
 
