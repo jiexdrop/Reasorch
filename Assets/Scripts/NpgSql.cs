@@ -11,9 +11,9 @@ public class NpgSql : MonoBehaviour
 
     private NpgsqlConnectionStringBuilder connStringBuilder;
 
-    private NpgsqlConnection conn;
+    public NpgsqlConnection conn;
 
-    void Start()
+    void Awake()
     {
         connStringBuilder = new NpgsqlConnectionStringBuilder();
         connStringBuilder.Host = "free-tier13.aws-eu-central-1.cockroachlabs.cloud";
@@ -103,8 +103,8 @@ public class NpgSql : MonoBehaviour
 
     public void ReloadData(TextMeshProUGUI text)
     {
-        // Print out the balances.
-        System.Console.WriteLine("Initial balances:");
+        // Print out the players.
+        System.Console.WriteLine("Players:");
         string allAccounts = "";
         using (var cmd = new NpgsqlCommand("SELECT name, health, money FROM players", conn))
         {
