@@ -13,6 +13,9 @@ public class SqlPositions : MonoBehaviour
 
     public Dictionary<string, Player> players = new Dictionary<string, Player>();
 
+    int playerX = 0;
+    int playerY = 0;
+
     void Start()
     {
         playerId = PlayerPrefs.GetString("player_id");
@@ -67,9 +70,17 @@ public class SqlPositions : MonoBehaviour
                     }
                     else
                     {
+                        // Instantiate a player with updatePlayerId
                         GameObject playerGO = Instantiate(playerPrefab, new Vector3(reader.GetInt32(1), reader.GetInt32(2)), Quaternion.identity);
                         Player player = playerGO.GetComponent<Player>();
                         players[updatePlayerId] = player;
+
+                        // Set initial values if we are playing with the selected playerId
+                        if (playerId == updatePlayerId)
+                        {
+                            playerX = reader.GetInt32(1);
+                            playerY = reader.GetInt32(2);
+                        }
                     }
 
                 }
@@ -91,4 +102,42 @@ public class SqlPositions : MonoBehaviour
         }
     }
 
+    public void Move(int x, int y)
+    {
+        // Insert two rows into the "accounts" table.
+        using (var cmd = new NpgsqlCommand())
+        {
+            cmd.Connection = npgSql.conn;
+            cmd.CommandText = $"UPDATE positions SET x = @x, y = @y WHERE player_id = @player_id";
+            cmd.Parameters.AddWithValue("player_id", long.Parse(playerId));
+            cmd.Parameters.AddWithValue("x", x);
+            cmd.Parameters.AddWithValue("y", y);
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void MoveUp()
+    {
+        playerY++;
+        Move(playerX, playerY);
+    }
+
+    public void MoveDown()
+    {
+        playerY--;
+        Move(playerX, playerY);
+    }
+
+    public void MoveLeft()
+    {
+        playerX--;
+        Move(playerX, playerY);
+    }
+
+
+    public void MoveRight()
+    {
+        playerX++;
+        Move(playerX, playerY);
+    }
 }

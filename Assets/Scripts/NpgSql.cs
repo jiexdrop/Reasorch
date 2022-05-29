@@ -119,25 +119,6 @@ public class NpgSql : MonoBehaviour
         text.text = allAccounts;
     }
 
-
-    public void Move(int id, int x, int y)
-    {
-
-
-        // Insert two rows into the "accounts" table.
-        using (var cmd = new NpgsqlCommand())
-        {
-            cmd.Connection = conn;
-            cmd.CommandText = $"UPDATE positions SET x = @score WHERE player_id = {id}";
-            cmd.Parameters.AddWithValue("x", x);
-            cmd.Parameters.AddWithValue("y", y);
-            cmd.ExecuteNonQuery();
-        }
-
-        ReloadData(playersTextList);
-
-    }
-
     public Vector2 GetPosition(int id)
     {
         using (var cmd = new NpgsqlCommand($"SELECT * FROM positions WHERE id = {id} LIMIT 1", conn))
