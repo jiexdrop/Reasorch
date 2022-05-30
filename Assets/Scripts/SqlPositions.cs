@@ -80,6 +80,9 @@ public class SqlPositions : MonoBehaviour
                         {
                             playerX = reader.GetInt32(1);
                             playerY = reader.GetInt32(2);
+
+                            // Update Camera position
+                            UpdateCameraPostion(playerX, playerY);
                         }
                     }
 
@@ -116,22 +119,31 @@ public class SqlPositions : MonoBehaviour
         }
     }
 
+    public void UpdateCameraPostion(int x, int y)
+    {
+        float cameraZ = Camera.main.transform.position.z;
+        Camera.main.transform.position = new Vector3(x, y, cameraZ);
+    }
+
     public void MoveUp()
     {
         playerY++;
         Move(playerX, playerY);
+        UpdateCameraPostion(playerX, playerY);
     }
 
     public void MoveDown()
     {
         playerY--;
         Move(playerX, playerY);
+        UpdateCameraPostion(playerX, playerY);
     }
 
     public void MoveLeft()
     {
         playerX--;
         Move(playerX, playerY);
+        UpdateCameraPostion(playerX, playerY);
     }
 
 
@@ -139,5 +151,6 @@ public class SqlPositions : MonoBehaviour
     {
         playerX++;
         Move(playerX, playerY);
+        UpdateCameraPostion(playerX, playerY);
     }
 }
